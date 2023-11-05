@@ -1,0 +1,173 @@
+---
+title: "Mutate Variables"
+author: "Daniel"
+date: "2023-10-31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo= FALSE, message = FALSE)
+```
+
+
+```{r echo=FALSE, warning=FALSE}
+
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse, janitor)
+
+
+```
+
+```{r}
+pacman::p_load(rio)   
+diab_china <- import("https://docs.google.com/uc?id=1rlxOppf_JvSN5iDJakl0PwYxFAX6r_H1&export=download",
+ format = "csv",
+ setclass = "tibble")
+
+head(diab_china)
+```
+
+```{r}
+diab_height <- diab_china %>% select(height_cm)
+diab_height
+```
+```{r}
+diab_height %>% mutate(height_cm= height_cm-50)
+```
+
+```{r}
+diab_china %>% mutate(bmi= weight_kg/ (height_m)^2)
+```
+
+```{r}
+ diab_bmi <-diab_china %>%
+  select(weight_kg,  height_cm) %>% 
+  
+  #  subtract 
+  mutate(height_cm= height_cm-50) %>% 
+  
+  # first obtain the height in meters
+  
+  mutate(height_m = height_cm/100) %>% 
+  
+  # then use the BMI formula
+  mutate(bmi = weight_kg / (height_m)^2)
+
+diab_bmi
+```
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+ diab_china_male <- diab_china %>% filter(gender_1_male_2_female 
+==
+  1)
+diab_china_female <- diab_china %>% filter(gender_1_male_2_female 
+==
+  2)
+```
+
+```{r}
+diab_china_female %>%
+  mutate(
+    height_cm = height_cm - 50,
+    height_m = height_cm / 100,
+    bmi = weight_kg / (height_m ^ 2),
+    high_bmi_diab_risk_women = bmi > 30  # creates a boolean var
+  ) %>%
+  tabyl(high_bmi_diab_risk_women) %>%  # creating a frequency table for high_bmi_diab_risk_women
+  adorn_pct_formatting() # another function from janitor
+
+```
+
+```{r}
+diab_china_male %>%
+  mutate(height_cm = height_cm -50,
+         height_m = height_cm / 100,
+         bmi = weight_kg / (height_m ^ 2),
+        high_bmi_diab_risk_men = bmi > 28  # creates a boolean var
+    ) %>%
+  tabyl(high_bmi_diab_risk_men ) %>%  # function from janitor
+  adorn_pct_formatting() # another function from janitor
+```
+
+```{r}
+diab_china_female %>%
+  mutate(
+    bun_mg_dl = bun_millimol_l / 0.357
+  ) %>% 
+  mutate(
+    female_bun_lvl_under_6 = bun_mg_dl < 6
+  ) %>% 
+  tabyl(female_bun_lvl_under_6) %>% 
+  adorn_pct_formatting()
+```
+
+```{r}
+diab_china_male %>%
+  mutate(
+    bun_mg_dl = bun_millimol_l / 0.357
+  ) %>% 
+  mutate(male_bun_lvl_under_8 = bun_mg_dl < 8
+  ) %>% 
+  tabyl(male_bun_lvl_under_8) %>% 
+  adorn_pct_formatting()
+```
+```{r}
+diab_china %>%
+  mutate(
+    ldl_new = ldl_millimol_l * 38.67
+  ) %>% 
+  mutate(ldl_above_160 = ldl_new < 160
+  ) %>% 
+ janitor::tabyl (ldl_above_160) %>% 
+  adorn_pct_formatting()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,28 @@
+---
+title: "Ebola Analysis"
+output: prettydoc::html_pretty
+date: "2023-10-19"
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+```{r}
+# Load packages ----
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(
+  tidyverse,
+  janitor,
+  inspectdf,
+  here) # The 'here' package should be included within 'pacman::p_load'
+library(readr)
+# Load data ---
+
+ebola_sierra_leone <- read_csv(here("Data/ebola_sierra_leone (1).csv"))
+
+
+
+
+

@@ -1,0 +1,49 @@
+------------------------------------------------------------------------
+
+title: "ebola_ analysis" 
+output: prettydoc::html_pretty 
+date: "2023-10-19" 
+
+editor_options: chunk_output_type: console
+
+------------------------------------------------------------------------
+
+
+
+This is some free text
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+2+3
+```
+
+```{r}
+max(women$height)
+```
+
+The maximum women's height is r max(women\$height)
+
+## **Tables**
+
+```{r}
+pacman::p_load(flextable, gt, reactable)
+ 
+flextable::flextable(women)
+gt::gt(women)
+reactable::reactable(women)
+
+```
+
+## **plots**
+
+```{r}
+library(ggplot2)
+```
+
+```{r fig.height=5,fig.weight=5}
+
+ggplot(women) + geom_point(aes(height, weight))
+```

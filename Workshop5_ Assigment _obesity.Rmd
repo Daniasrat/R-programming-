@@ -1,0 +1,154 @@
+---
+title: "Creating and transforming variables"
+author: "Daniel_Asrat"
+date: "2023-11-03"
+output: prettydoc::html_pretty:
+    theme: architect
+    toc: true
+    number_sections: false 
+    editor_options: 
+  chunk_output_type: inline
+  markdown: 
+    wrap: none
+    
+---
+```{r warning=FALSE}
+#  load the packages 
+if(!require(pacman)) install.packages("pacman")   
+pacman::p_load(rio, dplyr, janitor,tidyverse)
+
+```
+
+```{r}
+# import data
+
+obesity <- read_csv(here("C:/Users/danit/Downloads/obesity.csv"))
+
+obesity
+
+```
+
+# removal of the first wto variable in the dataset
+
+```{r}
+obesity_new <- obesity %>%
+  select(-1, -2)  # This selects all variables except the first two
+obesity_new
+```
+
+# Clean data with {dplyr}
+
+## **Step 1**: Examine and clean dataset (Instructor demo)
+
+```{r, warning=FALSE}
+obesity_clean <- obesity_new %>%
+  mutate(
+    # Convert these variables to numeric, NA will be introduced where conversion is not possible
+    bmi = as.numeric(as.character(bmi)),  # Convert bmi to numeric
+    sedentary_ap_s_day = as.numeric(as.character(sedentary_ap_s_day)),  # Convert sedentary_ap_s_day to numeric
+    light_ap_s_day = as.numeric(as.character(light_ap_s_day)),  # Convert light_ap_s_day to numeric
+    mvpa_s_day = as.numeric(as.character(mvpa_s_day)),  # Convert mvpa_s_day to numeric
+    
+     # Convert these variables to factors
+    sex = as.factor(sex),  # Convert sex to factor
+    status = as.factor(status),  # Convert status to factor
+    oms_recommendation = as.factor(oms_recommendation)  # Convert oms_recommendation to factor
+  ) 
+```
+
+# Checking the structure and summary of the dataset to ensure the changes are applied
+```{r}
+glimpse(obesity_clean)
+
+summary(obesity_clean)
+
+```
+
+# Step 2: Convert physical activity variables to minutes per week and remove old variables
+
+```{r}
+# Step 2: Convert physical activity variables to minutes per week and remove old variables
+obesity_clean1 <- obesity_clean %>%
+  mutate(sedentary_ap_m_week = (sedentary_ap_s_day / 60) * 7,
+    light_ap_m_week = (light_ap_s_day / 60) * 7,
+    mvpa_m_week = (mvpa_s_day / 60) * 7) %>%
+  select(-ends_with("_s_day"))  # Removes the old seconds per day variables
+
+# Lastly, rename `oms_recommendation` to `who_recommendation`
+obesity_clean2 <- obesity_clean1 %>%
+rename(who_recommendation = oms_recommendation)
+```
+
+
+```{r}
+# Check the changes with summary or glimpse
+summary(obesity_clean2)
+# or
+glimpse(obesity_clean2)
+```
+
+## **Step 3**: Combine physical activity variables
+
+```{r}
+# Assuming `obesity_clean2` is your latest dataset from the previous step
+obesity_clean3 <- obesity_clean2 %>% mutate(total_activity_m_week = light_ap_m_week + mvpa_m_week)
+obesity_clean3
+```
+
+## **Step 4**: Replace values in selected columns
+
+```{r}
+# Step 4: Replace values in the 'sex' column
+obesity_clean4 <- obesity_clean3 %>%
+  mutate(sex = recode(sex, "M" = "Male", "F" = "Female"))
+
+# Checking the changes
+glimpse(obesity_clean4)
+```
+# Replace values in the 'status' column
+
+```{r}
+obesity_clean5 <- obesity_clean4 %>% mutate(status = recode(status, "Adulte" = "Adult", "Enfant" = "Child"))
+
+# Checking the changes
+glimpse(obesity_clean5)
+```
+
+# Visualize data with {esquisse} ## **Plot 1**: Histogram
+```{r}
+# esquisse::esquisser(obesity_clean5)
+
+# Plotting a histogram of the bmi variable
+
+ggplot(obesity_clean5, aes(x = bmi)) + 
+  geom_histogram(binwidth = 1, color = "red", fill = "green") +
+  labs(title = "Histogram of BMI",
+       x = "BMI",
+       y = "Frequency") +
+  theme_minimal()
+```
+
+## **Plot 2**: Boxplot
+```{r}
+ggplot(obesity_clean5) +
+  aes(x = bmi, y = sex, fill = sex) +
+  geom_boxplot() +
+  scale_fill_hue(direction = 1) +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

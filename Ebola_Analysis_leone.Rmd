@@ -1,0 +1,41 @@
+---
+title: "Ebola_analysis 23"
+output: prettydoc::html_pretty
+date: "2023-10-19"
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Load packages ----
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(
+  tidyverse,
+  janitor,
+  inspectdf,
+  flextable,
+  here # new package we will use soon
+)
+
+ebola_sierra_leone <- read_csv(here("Data/ebola_sierra_leone.csv")) 
+```
+
+# Cases by district ----
+
+```{r echo=FALSE}
+district_tab <- tabyl(ebola_sierra_leone, district)
+flextable::flextable(district_tab)
+```
+
+# Visualize categorical variables
+
+```{r echo=FALSE}
+categ_vars_plot<- show_plot(inspect_cat(ebola_sierra_leone))
+categ_vars_plot
+```
+
+# Visualize numeric variables ----
+
+```{r echo=FALSE}
+num_vars_plot <- show_plot(inspect_num(ebola_sierra_leone))
+num_vars_plot
+```
